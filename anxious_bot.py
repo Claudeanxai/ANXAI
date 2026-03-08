@@ -119,7 +119,27 @@ def generate_anxious_thought():
     )
 
     thought = message.content[0].text.strip()
-    return thought[:280]
+
+    # If it fits, return as-is
+    if len(thought) <= 275:
+        return thought
+
+    # Trim to last complete sentence within 275 chars
+    trimmed = thought[:275]
+    last_end = max(
+        trimmed.rfind(". "),
+        trimmed.rfind("? "),
+        trimmed.rfind("! "),
+        trimmed.rfind(".\n"),
+        trimmed.rfind("?\n"),
+        trimmed.rfind("!\n"),
+    )
+    if last_end != -1:
+        return trimmed[:last_end + 1].strip()
+
+    # No sentence boundary — cut at last word
+    last_space = trimmed.rfind(" ")
+    return trimmed[:last_space].strip() if last_space != -1 else trimmed
 
 
 # ─── POSTING ──────────────────────────────────────────────────────────────────
